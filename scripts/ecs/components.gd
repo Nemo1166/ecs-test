@@ -10,6 +10,7 @@ class ElectricGenerator extends ECS.Component:
 
 class ElectricConsumer extends ECS.Component:
 	var power_rate: float
+	var efficiency: float = 1
 
 	func _init(_power_rate: float = 3):
 		self.power_rate = _power_rate
@@ -17,7 +18,28 @@ class ElectricConsumer extends ECS.Component:
 
 class Battery extends ECS.Component:
 	var capacity: float
+	var storage: float = 0:
+		set(value):
+			if value > capacity:
+				storage = capacity
+				current_state = State.FULL
+			elif value < 0:
+				storage = 0
+				current_state = State.EMPTY
+			elif value > storage:
+				storage = value
+				current_state = State.CHARGING
+			else:
+				storage = value
+				current_state = State.DISCHARGING
 	var power_rate: float
+
+	enum State { EMPTY, CHARGING, DISCHARGING, FULL }
+	signal state_changed(state: State)
+	var current_state: State = State.EMPTY:
+		set(value):
+			current_state = value
+			state_changed.emit(value)
 
 	func _init(_capacity: float = 120, _power_rate: float = 9):
 		self.capacity = _capacity

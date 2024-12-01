@@ -3,13 +3,15 @@ class_name ECS extends RefCounted
 
 class World extends RefCounted:
 	var _name: String = ""
-	var ent_mgr: EntityManager = EntityManager.new(self)
-	var systems: Array[System] = []
-
 	var debug_mode: bool = false
 
 	func _init(name: String) -> void:
 		_name = name
+	# region 实体管理
+	var ent_mgr: EntityManager = EntityManager.new(self)
+
+	#region 系统管理
+	var systems: Array[System] = []
 
 	## 添加系统
 	func add_system(system: System) -> void:
@@ -24,6 +26,9 @@ class World extends RefCounted:
 	func update(delta: float) -> void:
 		for system in systems:
 			system.update(delta)
+
+	#region 事件管理
+	var event_bus: EventBus = EventBus.new()
 
 	## 清空世界
 	func clear() -> void:
@@ -86,7 +91,13 @@ class EntityManager extends RefCounted:
 		return null
 
 	## 获取所有实体
-	func get_all_entity_ids() -> Array[int]:
+	func get_all_entity_ids(tag: String = '') -> Array[int]:
+		if tag != '':
+			var ids: Array[int] = []
+			for ent_id in entities.keys():
+				if entities[ent_id].tags.has(tag):
+					ids.append(ent_id)
+			return ids
 		return entities.keys()
 
 
@@ -95,15 +106,36 @@ class System extends RefCounted:
 
 	func _init(world: World) -> void:
 		_world = world
+
 	# override
 	func update(_delta: float) -> void:
 		pass
-	
-	func get_all_entities() -> Array[Entity]:
-		return _world.entities.values()
 
 
 class Component extends RefCounted:
 	func _init() -> void:
 		pass
 
+
+class EventBus extends RefCounted:
+	var _listeners: Dictionary = {}
+
+	func _init() -> void:
+		_listeners = {} # event_name: [listener, method]
+
+	func add_listener(event_name: String, listener: Object, method: String) -> void:
+		if not _listeners.has(event_name):
+			_listeners[event_name] = []
+		_listeners[event_name].append([listener, method])
+
+	func remove_listener(event_name: String, listener: Object, method: String) -> void:
+		if _listeners.has(event_name):
+			for i in range(_listeners[event_name].size()):
+				if _listeners[event_name][i][0] == listener and _listeners[event_name][i][1] == method:
+					_listeners[event_name].erase(i)
+					break
+
+	func emit(event_name: String, data: Variant = null) -> void:
+		if _listeners.has(event_name):
+			for listener in _listeners[event_name]:
+				listener[0].call_func(listener[1], data)
