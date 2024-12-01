@@ -9,17 +9,20 @@ func _init(world: ECS.World) -> void:
 
 
 func update(delta: float) -> void:
-    for ent: Entity in _world.entities.values():
-        var producer: Comps.Producer = ent.get_component("Producer")
+    var ent_ids = _world.ent_mgr.get_all_entity_ids()
+    for ent_id in ent_ids:
+        var producer: Comps.Producer = _world.ent_mgr.get_component(ent_id, "Producer")
+        var input: Comps.Inventory = _world.ent_mgr.get_component(ent_id, "InputDepot")
+        var output: Comps.Inventory = _world.ent_mgr.get_component(ent_id, "OutputDepot")
         if producer != null:
             if producer.recipe != null:
                 # check if enough resources
-                if not has_enough_resources(ent, producer.recipe):
+                if not has_enough_resources(input, producer.recipe):
                     producer.work_state = Comps.Producer.WorkState.INSUFFICIENT_RESOURCES
                     producer.current_state = Comps.Producer.State.IDLE
                     continue
                 # check if too many products
-                elif too_many_products(ent, producer.recipe):
+                elif too_many_products(output, producer.recipe):
                     producer.work_state = Comps.Producer.WorkState.INSUFFICIENT_SPACE
                     producer.current_state = Comps.Producer.State.IDLE
                     continue
@@ -33,29 +36,25 @@ func update(delta: float) -> void:
                     producer.progress = 0
                     for i in producer.recipe.products.keys():
                         var amount: float = producer.recipe.results[i]
-                        var output: Comps.Inventory = ent.get_component("OutputDepot")
                         output.add_item(i, amount)
                     # consume resources
                     for i in producer.recipe.ingredients.keys():
                         var amount: float = producer.recipe.ingredients[i]
-                        var input: Comps.Inventory = ent.get_component("InputDepot")
                         input.remove_item(i, amount)
 
 
-func has_enough_resources(ent: Entity, recipe: Recipe) -> bool:
+func has_enough_resources(depot: Comps.Inventory, recipe: Recipe) -> bool:
     for i in recipe.ingredients.keys():
         var amount: float = recipe.ingredients[i]
-        var input: Comps.Inventory = ent.get_component("InputDepot")
-        if not input.has_item(i, amount):
+        if not depot.has_item(i, amount):
             return false
     return true
 
 
-func too_many_products(ent: Entity, recipe: Recipe) -> bool:
+func too_many_products(depot: Comps.Inventory, recipe: Recipe) -> bool:
     const PRODUCT_COEFFICIENT := 2
     for i in recipe.products.keys():
         var amount: float = recipe.results[i] * PRODUCT_COEFFICIENT
-        var output: Comps.Inventory = ent.get_component("OutputDepot")
-        if output.has_item(i, amount):
+        if depot.has_item(i, amount):
             return true
     return false

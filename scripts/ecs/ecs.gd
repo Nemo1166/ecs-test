@@ -3,25 +3,13 @@ class_name ECS extends RefCounted
 
 class World extends RefCounted:
     var _name: String = ""
-    var _entity_id: int = 0
-    var entities: Dictionary = {}
+    var ent_mgr: EntityManager = EntityManager.new(self)
     var systems: Array[System] = []
 
     var debug_mode: bool = false
 
     func _init(name: String) -> void:
         _name = name
-
-    ## 创建实体
-    func create_entity() -> Entity:
-        var e = Entity.new(_entity_id)
-        _entity_id += 1
-        return e
-
-    ## 移除实体
-    func remove_entity(ent_id: int) -> void:
-        if entities.has(ent_id):
-            entities.erase(ent_id)
 
     ## 添加系统
     func add_system(system: System) -> void:
@@ -39,31 +27,67 @@ class World extends RefCounted:
 
     ## 清空世界
     func clear() -> void:
-        entities.clear()
+        ent_mgr.entities.clear()
         systems.clear()
 
 class Entity extends RefCounted:
     var _entity_id: int = 0
+    var tags: Array = []
     var components: Dictionary = {}
 
     func _init(_id) -> void:
         _entity_id = _id
 
+
+class EntityManager extends RefCounted:
+    var _world: World = null
+    var _entity_id: int = 0
+    var entities: Dictionary = {}
+
+    func _init(world: World) -> void:
+        _world = world
+
+    ## 创建实体
+    func create_entity() -> Entity:
+        var ent = Entity.new(_entity_id)
+        entities[_entity_id] = ent
+        _entity_id += 1
+        return ent
+
+    ## 移除实体
+    func remove_entity(ent_id: int) -> bool:
+        if entities.has(ent_id):
+            entities.erase(ent_id)
+            return true
+        return false
+
+    ## 获取实体
+    func get_entity(ent_id: int) -> Entity:
+        if entities.has(ent_id):
+            return entities[ent_id]
+        return null
+
     ## 添加组件
-    func add_component(component_name: String, component: Object) -> void:
-        components[component_name] = component
+    func add_component(ent_id: int, comp_name: String, comp: Component) -> void:
+        if entities.has(ent_id):
+            entities[ent_id].components[comp_name] = comp
 
     ## 移除组件
-    func remove_component(component_name: String) -> void:
-        components.erase(component_name)
+    func remove_component(ent_id: int, comp_name: String) -> void:
+        if entities.has(ent_id):
+            if entities[ent_id].components.has(comp_name):
+                entities[ent_id].components.erase(comp_name)
 
     ## 获取组件
-    func get_component(component_name: String) -> Object:
-        return components.get(component_name, null)
+    func get_component(ent_id: int, comp_name: String) -> Component:
+        if entities.has(ent_id):
+            if entities[ent_id].components.has(comp_name):
+                return entities[ent_id].components[comp_name]
+        return null
 
-    ## 检查是否包含某个组件
-    func has_component(component_name: String) -> bool:
-        return components.has(component_name)
+    ## 获取所有实体
+    func get_all_entity_ids() -> Array[int]:
+        return entities.keys()
 
 
 class System extends RefCounted:

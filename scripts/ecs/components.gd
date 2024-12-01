@@ -44,7 +44,8 @@ class Producer extends ECS.Component:
 
     func set_recipe(_recipe: Recipe):
         self.recipe = _recipe
-    
+        self.progress = 0
+
     func reset():
         progress = 0
         current_state = State.IDLE
