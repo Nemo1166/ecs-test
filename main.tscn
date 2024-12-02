@@ -1,6 +1,76 @@
-[gd_scene load_steps=2 format=3 uid="uid://c7chixj6g1456"]
+[gd_scene load_steps=3 format=3 uid="uid://c7chixj6g1456"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_gosmm"]
 
+[sub_resource type="GDScript" id="GDScript_j2fnk"]
+script/source = "extends Label
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	text = 'FPS: %.2f' % (1.0/delta)
+"
+
 [node name="World" type="Node2D"]
 script = ExtResource("1_gosmm")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 305.0
+offset_bottom = 321.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="Control/VBoxContainer"]
+layout_mode = 2
+text = "FPS: 60.00"
+vertical_alignment = 1
+script = SubResource("GDScript_j2fnk")
+
+[node name="NofEnts" type="Label" parent="Control/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "N. of entities: 1"
+
+[node name="PSR" type="Label" parent="Control/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PowerStat" type="Label" parent="Control/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control"]
+layout_mode = 0
+offset_left = 608.0
+offset_top = 32.0
+offset_right = 864.0
+offset_bottom = 320.0
+scale = Vector2(2, 2)
+metadata/_edit_group_ = true
+
+[node name="BtyStat" type="Label" parent="Control/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
