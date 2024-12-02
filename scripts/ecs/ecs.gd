@@ -14,8 +14,9 @@ class World extends RefCounted:
 	var systems: Array[System] = []
 
 	## 添加系统
-	func add_system(system: System) -> void:
+	func add_system(system: System) -> System:
 		systems.append(system)
+		return system
 
 	## 移除系统
 	func remove_system(system: System) -> void:
@@ -24,6 +25,7 @@ class World extends RefCounted:
 
 	## 更新系统
 	func update(delta: float) -> void:
+		ent_mgr.update()
 		for system in systems:
 			system.update(delta)
 
@@ -48,9 +50,15 @@ class EntityManager extends RefCounted:
 	var _world: World = null
 	var _entity_id: int = 0
 	var entities: Dictionary = {}
+	var entities_to_destroy: Array[int] = []
 
 	func _init(world: World) -> void:
 		_world = world
+	
+	func update() -> void:
+		for ent_id in entities_to_destroy:
+			if entities.has(ent_id):
+				entities.erase(ent_id)
 
 	## 创建实体
 	func create_entity() -> Entity:
@@ -62,7 +70,7 @@ class EntityManager extends RefCounted:
 	## 移除实体
 	func remove_entity(ent_id: int) -> bool:
 		if entities.has(ent_id):
-			entities.erase(ent_id)
+			entities_to_destroy.append(ent_id)
 			return true
 		return false
 
@@ -89,9 +97,15 @@ class EntityManager extends RefCounted:
 			if entities[ent_id].components.has(comp_name):
 				return entities[ent_id].components[comp_name]
 		return null
+	
+	## 是否有组件
+	func has_component(ent_id: int, comp_name: String) -> bool:
+		if entities.has(ent_id):
+			return entities[ent_id].components.has(comp_name)
+		return false
 
 	## 获取所有实体
-	func get_all_entity_ids(tag: String = '') -> Array[int]:
+	func get_all_entity_ids(tag: String = '') -> Array:
 		if tag != '':
 			var ids: Array[int] = []
 			for ent_id in entities.keys():
@@ -138,4 +152,4 @@ class EventBus extends RefCounted:
 	func emit(event_name: String, data: Variant = null) -> void:
 		if _listeners.has(event_name):
 			for listener in _listeners[event_name]:
-				listener[0].call_func(listener[1], data)
+				listener[0].call(listener[1], data)

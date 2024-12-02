@@ -1,5 +1,7 @@
 class_name Comps extends RefCounted
 
+#region 电力
+
 class ElectricGenerator extends ECS.Component:
 	var power_rate: float
 	var efficiency: float = 1
@@ -7,31 +9,19 @@ class ElectricGenerator extends ECS.Component:
 	func _init(_power_rate: float = 6):
 		self.power_rate = _power_rate
 
-
 class ElectricConsumer extends ECS.Component:
 	var power_rate: float
 	var efficiency: float = 1
 
+	enum State { IDLE=1, WORKING=10 }
+	var current_state: State = State.IDLE
+
 	func _init(_power_rate: float = 3):
 		self.power_rate = _power_rate
 
-
 class Battery extends ECS.Component:
 	var capacity: float
-	var storage: float = 0:
-		set(value):
-			if value > capacity:
-				storage = capacity
-				current_state = State.FULL
-			elif value < 0:
-				storage = 0
-				current_state = State.EMPTY
-			elif value > storage:
-				storage = value
-				current_state = State.CHARGING
-			else:
-				storage = value
-				current_state = State.DISCHARGING
+	var storage: float = 0
 	var power_rate: float
 
 	enum State { EMPTY, CHARGING, DISCHARGING, FULL }
@@ -45,6 +35,8 @@ class Battery extends ECS.Component:
 		self.capacity = _capacity
 		self.power_rate = _power_rate
 
+
+#region 生产
 
 class Producer extends ECS.Component:
 	var progress: float = 0
@@ -75,6 +67,8 @@ class Producer extends ECS.Component:
 		self.recipe = null
 
 
+#region 物品
+
 class Inventory extends ECS.Component:
 	var inventory: Dictionary = {}
 
@@ -100,4 +94,7 @@ class Inventory extends ECS.Component:
 
 
 class InputDepot extends Inventory:
-	var orders: Array = []
+	pass
+
+class OutputDepot extends Inventory:
+	pass
