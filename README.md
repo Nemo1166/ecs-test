@@ -5,4 +5,5 @@ A project for testing godot game in ECS (Entity-Component-System) pattern, with 
 ## To-do
 
 - [ ] Command Manager
+- [ ] Performance optimisation
 - [ ] etc.
