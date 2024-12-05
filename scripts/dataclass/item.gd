@@ -16,7 +16,7 @@ enum ItemType {
 @export var icon: Texture = null
 @export_range(1,6) var tier: int = 1
 @export var type: ItemType = ItemType.OTHER
-@export var weight: float = 0.0
+@export var weight: float = 1.0
 
 @export var is_fuel: bool = false
 ## available burnt time (as hour)

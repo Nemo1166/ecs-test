@@ -28,7 +28,7 @@ func update(delta: float) -> void:
 	for ent_id: int in ent_ids:
 		var consumer: Comps.ElectricConsumer = _world.ent_mgr.get_component(ent_id, "ElectricConsumer")
 		if consumer != null:
-			total_consumption += consumer.power_rate * consumer.efficiency * (float(consumer.current_state)/10)
+			total_consumption += consumer.power_rate * consumer.efficiency * (float(consumer.current_state)*0.01)
 		var generator: Comps.ElectricGenerator = _world.ent_mgr.get_component(ent_id, "ElectricGenerator")
 		if generator != null:
 			total_generation += generator.power_rate * generator.efficiency
@@ -42,8 +42,8 @@ func update(delta: float) -> void:
 			var battery: Comps.Battery = _world.ent_mgr.get_component(ent_id, "Battery")
 			if battery.current_state != Comps.Battery.State.EMPTY:
 				var charge = min(-available_power * delta, battery.power_rate * delta * global_charge_efficiency)
-				battery.storage -= charge
-				total_charge += charge
+				var actual_charge = battery_charge(battery, -charge)
+				total_charge += actual_charge
 				total_storage += Vector2(battery.storage, battery.capacity)
 				# update power supply
 				available_power += battery.power_rate * global_charge_efficiency

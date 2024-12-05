@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://huc8ry05fkqp"]
+
+[ext_resource type="Script" path="res://scenes/drone_station.gd" id="1_1i62u"]
+[ext_resource type="Texture2D" uid="uid://rrnlfwsj85mg" path="res://icon.svg" id="2_h8dom"]
+
+[node name="DroneStation" type="Node2D"]
+script = ExtResource("1_1i62u")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.950724, 0.549479, 1, 1)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("2_h8dom")
+
+[node name="ID" type="Label" parent="."]
+offset_left = -37.0
+offset_top = -37.0
+offset_right = 3.0
+offset_bottom = -14.0
+
+[node name="Drones" type="Node2D" parent="."]

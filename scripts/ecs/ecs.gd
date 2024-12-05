@@ -7,8 +7,57 @@ class World extends RefCounted:
 
 	func _init(name: String) -> void:
 		_name = name
+
 	# region 实体管理
 	var ent_mgr: EntityManager = EntityManager.new(self)
+
+	## 创建实体
+	func create_entity() -> int:
+		return ent_mgr.create_entity()
+
+	## 移除实体
+	func remove_entity(ent_id: int) -> bool:
+		return ent_mgr.remove_entity(ent_id)
+
+	## 获取实体
+	func get_entity(ent_id: int) -> Entity:
+		return ent_mgr.get_entity(ent_id)
+
+	## 添加组件
+	func add_component(ent_id: int, comp_name: String, comp: Component) -> void:
+		ent_mgr.add_component(ent_id, comp_name, comp)
+
+	## 移除组件
+	func remove_component(ent_id: int, comp_name: String) -> void:
+		ent_mgr.remove_component(ent_id, comp_name)
+
+	## 获取组件
+	func get_component(ent_id: int, comp_name: String) -> Component:
+		return ent_mgr.get_component(ent_id, comp_name)
+
+	## 是否有组件
+	func has_component(ent_id: int, comp_name: String) -> bool:
+		return ent_mgr.has_component(ent_id, comp_name)
+
+	## 获取所有实体
+	func get_all_entity_ids(tag: String = '') -> Array:
+		return ent_mgr.get_all_entity_ids(tag)
+
+	## 获取实体数量
+	func get_entity_count() -> int:
+		return ent_mgr.entities.size()
+
+	## 添加标签
+	func add_tag(ent_id: int, tag: String) -> void:
+		ent_mgr.add_tag(ent_id, tag)
+
+	## 移除标签
+	func remove_tag(ent_id: int, tag: String) -> void:
+		ent_mgr.remove_tag(ent_id, tag)
+
+	## 是否有标签
+	func has_tag(ent_id: int, tag: String) -> bool:
+		return ent_mgr.has_tag(ent_id, tag)
 
 	#region 系统管理
 	var systems: Array[System] = []
@@ -31,6 +80,29 @@ class World extends RefCounted:
 
 	#region 事件管理
 	var event_bus: EventBus = EventBus.new()
+
+	## 添加事件监听
+	func subscribe(event_name: String, listener: Object, method: String) -> void:
+		event_bus.add_listener(event_name, listener, method)
+
+	## 移除事件监听
+	func unsubscribe(event_name: String, listener: Object, method: String) -> void:
+		event_bus.remove_listener(event_name, listener, method)
+
+	## 发送事件
+	func publish(event_name: String, data: Variant = null) -> void:
+		event_bus.emit(event_name, data)
+
+	#region 命令管理
+	var cmd_mgr: CommandManager = CommandManager.new(self)
+
+	## 添加命令
+	func register_command(command: Command) -> void:
+		cmd_mgr.add_command(command)
+
+	## 执行命令
+	func execute(command: String) -> void:
+		cmd_mgr.execute_command(command)
 
 	## 清空世界
 	func clear() -> void:
@@ -61,11 +133,11 @@ class EntityManager extends RefCounted:
 				entities.erase(ent_id)
 
 	## 创建实体
-	func create_entity() -> Entity:
+	func create_entity() -> int:
 		var ent = Entity.new(_entity_id)
 		entities[_entity_id] = ent
 		_entity_id += 1
-		return ent
+		return _entity_id - 1
 
 	## 移除实体
 	func remove_entity(ent_id: int) -> bool:
@@ -114,6 +186,22 @@ class EntityManager extends RefCounted:
 			return ids
 		return entities.keys()
 
+	## 添加标签
+	func add_tag(ent_id: int, tag: String) -> void:
+		if entities.has(ent_id):
+			entities[ent_id].tags.append(tag)
+	
+	## 移除标签
+	func remove_tag(ent_id: int, tag: String) -> void:
+		if entities.has(ent_id):
+			if entities[ent_id].tags.has(tag):
+				entities[ent_id].tags.erase(tag)
+	
+	## 是否有标签
+	func has_tag(ent_id: int, tag: String) -> bool:
+		if entities.has(ent_id):
+			return entities[ent_id].tags.has(tag)
+		return false
 
 class System extends RefCounted:
 	var _world: World = null
@@ -153,3 +241,34 @@ class EventBus extends RefCounted:
 		if _listeners.has(event_name):
 			for listener in _listeners[event_name]:
 				listener[0].call(listener[1], data)
+
+
+class Command extends RefCounted:
+	var _world: World = null
+
+	func _init(world: World) -> void:
+		_world = world
+
+	# override
+	func execute() -> void:
+		pass
+
+class CommandManager extends RefCounted:
+	var _world: World = null
+	var _commands: Array = []
+
+	func _init(world: World) -> void:
+		_world = world
+
+	func add_command(command: Command) -> void:
+		_commands.append(command)
+
+	func del_command(command: Command) -> void:
+		if _commands.has(command):
+			_commands.erase(command)
+
+	func execute_command(command: String) -> void:
+		for cmd in _commands:
+			if cmd.get_class() == command:
+				cmd.execute()
+				break

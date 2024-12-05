@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Item" load_steps=2 format=3 uid="uid://bsm3e5r627klm"]
+
+[ext_resource type="Script" path="res://scripts/dataclass/item.gd" id="1_40fuu"]
+
+[resource]
+script = ExtResource("1_40fuu")
+id = 1
+name = "stone"
+desc_basic = ""
+desc_ext = ""
+tier = 1
+type = 0
+weight = 2.0
+is_fuel = false
+fuel_value = 0

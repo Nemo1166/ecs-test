@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Recipe" load_steps=3 format=3 uid="uid://bxa3v2fp7jpsf"]
+
+[ext_resource type="Resource" uid="uid://bsm3e5r627klm" path="res://data/stone.tres" id="1_dwmcc"]
+[ext_resource type="Script" path="res://scripts/dataclass/recipe.gd" id="2_hkggr"]
+
+[resource]
+script = ExtResource("2_hkggr")
+id = 0
+name = ""
+category = 8
+description = ""
+ingredients = {}
+results = {
+ExtResource("1_dwmcc"): 2
+}
+duration = 6

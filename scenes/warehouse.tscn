@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://du5ftrixqf8t0"]
+
+[ext_resource type="Script" path="res://scenes/warehouse.gd" id="1_qqkq0"]
+[ext_resource type="Texture2D" uid="uid://rrnlfwsj85mg" path="res://icon.svg" id="2_xq50q"]
+
+[node name="Warehouse" type="Node2D"]
+script = ExtResource("1_qqkq0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.330729, 1, 0.351644, 1)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("2_xq50q")
+
+[node name="ID" type="Label" parent="."]
+offset_left = -37.0
+offset_top = -37.0
+offset_right = 3.0
+offset_bottom = -14.0
+
+[node name="Stat" type="Label" parent="."]
+offset_left = 51.0
+offset_top = -37.0
+offset_right = 123.0
+offset_bottom = 38.0

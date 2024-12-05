@@ -1,5 +1,25 @@
 class_name Comps extends RefCounted
 
+#region 通用
+
+class Position extends ECS.Component:
+	var _position: Vector2
+
+	func _init(position: Vector2 = Vector2.ZERO):
+		_position = position
+
+	func set_position(position: Vector2):
+		_position = position
+
+	func get_position() -> Vector2:
+		return _position
+
+class Velocity extends ECS.Component:
+	var velocity: Vector2
+
+	func _init(_velocity: Vector2 = Vector2.ZERO):
+		velocity = _velocity
+
 #region 电力
 
 class ElectricGenerator extends ECS.Component:
@@ -13,7 +33,7 @@ class ElectricConsumer extends ECS.Component:
 	var power_rate: float
 	var efficiency: float = 1
 
-	enum State { IDLE=1, WORKING=10 }
+	enum State { IDLE=5, WORKING=100 }
 	var current_state: State = State.IDLE
 
 	func _init(_power_rate: float = 3):
@@ -41,7 +61,11 @@ class Battery extends ECS.Component:
 class Producer extends ECS.Component:
 	var progress: float = 0
 	var recipe: Recipe = null
-	
+	var acceptable_category: Recipe.Category = Recipe.Category.OTHERS
+
+	func _init(category: Recipe.Category = Recipe.Category.OTHERS):
+		acceptable_category = category
+
 	enum State { IDLE, WORKING }
 	var current_state: State = State.IDLE:
 		set(value):
@@ -71,14 +95,18 @@ class Producer extends ECS.Component:
 
 class Inventory extends ECS.Component:
 	var inventory: Dictionary = {}
+	var capacity: float
 
-	func add_item(item: Item, amount: float):
+	func _init(_capacity: float = 100):
+		self.capacity = _capacity
+
+	func add_item(item: Item, amount: int):
 		if inventory.has(item):
 			inventory[item] += amount
 		else:
 			inventory[item] = amount
 
-	func remove_item(item: Item, amount: float):
+	func remove_item(item: Item, amount: int):
 		if inventory.has(item):
 			inventory[item] -= amount
 			if inventory[item] <= 0:
@@ -89,12 +117,18 @@ class Inventory extends ECS.Component:
 			return inventory[item] >= amount
 		return false
 
-	func get_item_amount(item: Item) -> float:
+	func get_item_amount(item: Item) -> int:
 		return inventory.get(item, 0)
 
+	func get_inventory_str() -> String:
+		var s: String = " "
+		for i in inventory.keys():
+			s += "%s: %d\n" % [i.name, inventory[i]]
+		return s
 
-class InputDepot extends Inventory:
-	pass
+# class Cargo extends Inventory:
+# 	func _init() -> void:
+# 		super._init(20)
 
-class OutputDepot extends Inventory:
-	pass
+
+#region 物流

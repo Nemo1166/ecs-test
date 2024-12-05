@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7chixj6g1456"]
+[gd_scene load_steps=5 format=3 uid="uid://c7chixj6g1456"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_gosmm"]
+[ext_resource type="PackedScene" uid="uid://du5ftrixqf8t0" path="res://scenes/warehouse.tscn" id="2_kln3r"]
+[ext_resource type="PackedScene" uid="uid://huc8ry05fkqp" path="res://scenes/drone_station.tscn" id="3_16t1r"]
 
 [sub_resource type="GDScript" id="GDScript_j2fnk"]
 script/source = "extends Label
@@ -34,13 +36,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 32.0
-offset_top = 32.0
-offset_right = 305.0
-offset_bottom = 321.0
+offset_left = 584.0
+offset_top = 24.0
+offset_right = 857.0
+offset_bottom = 313.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(2, 2)
 metadata/_edit_group_ = true
 
 [node name="Label" type="Label" parent="Control/VBoxContainer"]
@@ -64,13 +65,49 @@ layout_mode = 2
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="Control"]
 layout_mode = 0
-offset_left = 608.0
-offset_top = 32.0
-offset_right = 864.0
-offset_bottom = 320.0
-scale = Vector2(2, 2)
+offset_left = 872.0
+offset_top = 24.0
+offset_right = 1128.0
+offset_bottom = 312.0
 metadata/_edit_group_ = true
 
 [node name="BtyStat" type="Label" parent="Control/VBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 48.0
+offset_right = 191.0
+offset_bottom = 79.0
+text = "build wood miner"
+
+[node name="Button2" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 232.0
+offset_top = 48.0
+offset_right = 407.0
+offset_bottom = 79.0
+text = "build stone miner"
+
+[node name="Button3" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 808.0
+offset_top = 368.0
+offset_right = 983.0
+offset_bottom = 399.0
+text = "build Power plant"
+
+[node name="Warehouse" parent="." instance=ExtResource("2_kln3r")]
+position = Vector2(960, 448)
+
+[node name="DroneStation" parent="." node_paths=PackedStringArray("drone_instances") instance=ExtResource("3_16t1r")]
+position = Vector2(960, 576)
+drone_instances = NodePath("../Drones")
+
+[node name="Drones" type="Node2D" parent="."]
+
+[connection signal="pressed" from="Control/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Control/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Control/Button3" to="." method="_on_button_3_pressed"]

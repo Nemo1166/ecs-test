@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Item" load_steps=2 format=3 uid="uid://bvsj5futnj3se"]
+
+[ext_resource type="Script" path="res://scripts/dataclass/item.gd" id="1_djnsd"]
+
+[resource]
+script = ExtResource("1_djnsd")
+id = 0
+name = "wood"
+desc_basic = ""
+desc_ext = ""
+tier = 1
+type = 0
+weight = 1.0
+is_fuel = false
+fuel_value = 0
